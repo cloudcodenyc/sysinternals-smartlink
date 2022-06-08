@@ -2,9 +2,9 @@
 # INDIVIDUAL FILE SYMLINK (HTTPS) - Make new directoy that CONTAINS symlinks  #
 #                                                                             #
 # LICENSE  = MIT                                                              #
-# VERSION  = 0.0.1                                                            #
-# FILENAME = sysinternals-filesym_ssl.ps1                                     #
-# GITREPO  = https://github.com/cloudcodenyc/sysinternals-smartlink.git       #
+# VERSION  = 0.0.2                                                            #
+# FILENAME = sysinternals-filelink_ssl.ps1                                    #
+# LOCATION = https://github.com/cloudcodenyc/sysinternals-smartlink           #
 #                                                                             #
 ###############################################################################
 # Copyright (c) 2022 cloudcodenyc                                             #
@@ -28,7 +28,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION       #
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.             #
 ###############################################################################
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
 
 	$STYPE="ssl_link"
 	$SPATH=".\sysinternals-$STYPE"
@@ -36,10 +37,14 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
 	$HTTPS="$(Test-Path -Path "$SLIVE" -ErrorAction continue)"
 	$EXIST="$(Test-Path -Path "$SPATH" -ErrorAction continue)"
 	
-if ($HTTPS -eq "False") {echo 'ERROR: NO REMOTE ACCESS' ; exit 1}
-if ($EXIST -eq "False") {New-Item -ItemType Directory -Path "$SPATH" -Force -ErrorAction continue ; cd "$SPATH"}
+if ($HTTPS -eq "False") {Write-Output 'ERROR: NO REMOTE ACCESS' ; exit 1}
+if ($EXIST -eq "False") {New-Item -ItemType directory -Path "$SPATH" -Force -ErrorAction continue ; cd "$SPATH"}
 
 Get-ChildItem $SLIVE | ForEach-Object -Process {if (!$_.PSIsContainer) {$_.Name}}
 Get-ChildItem $SLIVE | ForEach-Object {New-Item -ItemType SymbolicLink -Path $_.Name -Target $_.PSPath}
+
+	$TESTFILE=$(Test-Path -Path "$SPATH\psexec.exe" -PathType leaf -ErrorAction continue)
+
+if ($TESTFILE -eq "False") {exit 1}
 
 exit 0

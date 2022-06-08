@@ -1,10 +1,10 @@
 ::#############################################################################
-::# DIRECTORY SYMLINK (HTTPS) - Create new symbolic link DIRECTORY to Remote  #
+::# DIRECTORY SYMLINK (HTTPS) - Create new symbolic link DIRECTORY to REMOTE  #
 ::#                                                                           #
 ::# LICENSE  = MIT                                                            #
-::# VERSION  = 0.0.1                                                          #
+::# VERSION  = 0.0.2                                                          #
 ::# FILENAME = sysinternals-path_https.cmd                                    #
-::# GITREPO  = https://github.com/cloudcodenyc/sysinternals-smartlink,git     #
+::# LOCATION = https://github.com/cloudcodenyc/sysinternals-smartlink         #
 ::#                                                                           #
 ::#############################################################################
 ::# Copyright (c) 2022 cloudcodenyc                                           #
@@ -30,11 +30,21 @@
 ::#############################################################################
 @echo OFF
 
+::# Set SYSINTERNALS Variables
 	set SNAME=sysinternals_https
 	set SLIVE=\\live.sysinternals.com@SSL\DavWWWRoot\tools\
+
+::# Set Directory PATH as script parent directory
 	set SPATH=%~dp0%SNAME%
 
+::# Check for SMARTLINK directory and remove if exists
 IF EXIST "%SPATH%" (rmdir /F /S /Q "%SPATH%") 2>nul
+
+::# Create SMARTLINK directory and new SMARTLINKS
 IF NOT EXIST "%SPATH%" (cd "%~dp0" && mklink /D %SNAME% "%SLIVE%" 2>nul) ELSE (echo "PARENT DIRECTORY NOT FOUND" && exit 1) 2>nul
+
+::# Check for file and EXIT with ERROR CODE if not exists
 IF NOT EXIST "%SPATH%\psexec.exe" (exit 1)
+
+::# Check for file and EXIT with SUCCESS CODE if exists
 IF EXIST "%SPATH%\psexec.exe" (exit 0)
